@@ -4,8 +4,6 @@ import static info.magnolia.parser.Parsers.constant;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.empty;
 
-import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -13,45 +11,9 @@ import java.util.stream.Stream;
 
 interface Parser<T> {
 
-    class Result<T> {
-        private final T result;
-        private final String error;
-        private final String remainder;
-
-        private Result(T result, String error, String remainder) {
-            this.result = result;
-            this.error = error;
-            this.remainder = remainder;
-        }
-
+    record Result<T> (T result, String error, String remainder) {
         public boolean isSuccess() {
             return error == null;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) {
-                return true;
-            }
-            if (other == null || getClass() != other.getClass()) {
-                return false;
-            }
-            Result<?> that = (Result<?>) other;
-            return Objects.equals(result, that.result) && Objects.equals(remainder, that.remainder);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(result, remainder);
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", Result.class.getSimpleName() + "[", "]")
-                    .add("result=" + result)
-                    .add("error=" + error)
-                    .add("remainder='" + remainder + "'")
-                    .toString();
         }
 
         public <R> Result<R> map(Function<T, R> f) {
