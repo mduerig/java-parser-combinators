@@ -11,19 +11,19 @@ import java.util.stream.Stream;
 
 interface Parser<T> {
 
-    record Result<T> (T result, String error, String remainder) {
+    record Result<T> (T value, String error, String remainder) {
         public boolean isSuccess() {
             return error == null;
         }
 
         public <R> Result<R> map(Function<T, R> f) {
             return isSuccess()
-               ? success(f.apply(result), remainder)
+               ? success(f.apply(value), remainder)
                : failure(error, remainder);
         }
     }
 
-    Result<T> parse(String s);
+    Result<T> parse(String input);
 
     static <T> Result<T> success(T result, String remainder) {
         return new Result<>(result, null, remainder);
@@ -34,52 +34,52 @@ interface Parser<T> {
     }
 
     default Parser<T> filter(Predicate<T> predicate) {
-        return s -> {
-            var r = parse(s);
-            return r.isSuccess() && predicate.test(r.result)
-               ? r
-               : failure("Unexpected input " + s, s);
+        return input -> {
+            var result = parse(input);
+            return result.isSuccess() && predicate.test(result.value)
+               ? result
+               : failure("Unexpected input " + input, input);
         };
     }
 
     default <R> Parser<R> map(Function<T, R> f) {
-        return s -> parse(s).map(f);
+        return input -> parse(input).map(f);
     }
 
-    default <R> Parser<R> result(R r) {
-        return map(__ -> r);
+    default <R> Parser<R> result(R value) {
+        return map(__ -> value);
     }
 
     default <R> Parser<R> andThen(Function<T, Parser<R>> f) {
-        return s -> {
-            var r1 = parse(s);
-            return r1.isSuccess()
-                ? f.apply(r1.result)
-                    .parse(r1.remainder)
-                : failure(r1.error, r1.remainder);
+        return input -> {
+            var result = parse(input);
+            return result.isSuccess()
+                ? f.apply(result.value)
+                    .parse(result.remainder)
+                : failure(result.error, result.remainder);
         };
     }
 
-    default <R> Parser<R> then(Parser<R> p) {
-        return andThen(__ -> p);
+    default <R> Parser<R> then(Parser<R> parser) {
+        return andThen(__ -> parser);
     }
 
-    default Parser<T> orElse(Supplier<Parser<T>> other) {
-        return s -> {
-            var r1 = parse(s);
-            return r1.isSuccess()
-                ? r1
-                : other.get().parse(s);
+    default Parser<T> orElse(Supplier<Parser<T>> otherParser) {
+        return input -> {
+            var result = parse(input);
+            return result.isSuccess()
+                ? result
+                : otherParser.get().parse(input);
         };
     }
 
     default Parser<Stream<T>> some() {
         return
             this
-                .andThen(r ->
+                .andThen(result ->
             this.many()
-                .map(rs ->
-            concat(Stream.of(r), rs)));
+                .map(results ->
+            concat(Stream.of(result), results)));
     }
 
     default Parser<Stream<T>> many() {

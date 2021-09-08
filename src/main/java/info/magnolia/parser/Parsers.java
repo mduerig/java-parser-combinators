@@ -17,9 +17,9 @@ public final class Parsers {
     }
 
     public static Parser<Character> anyChar() {
-        return s -> s.isEmpty()
+        return input -> input.isEmpty()
            ? failure("Expected Character, found EOF", "")
-           : success(s.charAt(0), s.substring(1));
+           : success(input.charAt(0), input.substring(1));
     }
 
     public static Parser<Character> character(Predicate<Character> predicate) {
@@ -76,12 +76,10 @@ public final class Parsers {
     public static <R, S> Parser<Stream<R>> delimited(Parser<R> parser, Parser<S> deliminator) {
         var nonEmpty =
             parser
-                .andThen(r ->
-            deliminator
-                .then(
-            parser).many()
-                .map(rs ->
-            concat(Stream.of(r), rs)));
+                .andThen(result ->
+            deliminator.then(parser).many()
+                .map(results ->
+            concat(Stream.of(result), results)));
         return
             nonEmpty
                 .orElse(() ->
