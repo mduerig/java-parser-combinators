@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -60,10 +62,12 @@ public class ParserTest {
     public void many() {
         var parser = character('a').many();
 
-        var result1 = parser.parse("x");
+        var result1 = parser.parse("x")
+                .map(ParserTest::toList);
         assertEquals(success(List.of(), "x"), result1);
 
-        var result2 = parser.parse("aaax");
+        var result2 = parser.parse("aaax")
+                .map(ParserTest::toList);
         assertEquals(success(List.of('a', 'a', 'a'), "x"), result2);
     }
 
@@ -74,7 +78,8 @@ public class ParserTest {
         var result1 = parser.parse("x");
         assertFalse(result1.isSuccess());
 
-        var result2 = parser.parse("aaax");
+        var result2 = parser.parse("aaax")
+                .map(ParserTest::toList);
         assertEquals(success(List.of('a', 'a', 'a'), "x"), result2);
     }
 
@@ -114,15 +119,22 @@ public class ParserTest {
     public void separatedParser() {
         var parser = separated(literal("a"), literal(","));
 
-        var result1 = parser.parse("x");
+        var result1 = parser.parse("x")
+                .map(ParserTest::toList);
         assertEquals(success(emptyList(), "x"), result1);
 
-        var result2 = parser.parse("ax");
+        var result2 = parser.parse("ax")
+                .map(ParserTest::toList);
         assertEquals(success(List.of("a"), "x"), result2);
 
-        var result3 = parser.parse("a,ax");
+        var result3 = parser.parse("a,ax")
+                .map(ParserTest::toList);
         assertEquals(success(List.of("a", "a"), "x"), result3);
     }
 
+
+    private static <T> List<T> toList(Stream<T> stream) {
+        return stream.collect(Collectors.toList());
+    }
 
 }

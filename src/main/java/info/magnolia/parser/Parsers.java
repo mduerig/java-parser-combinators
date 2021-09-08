@@ -2,11 +2,10 @@ package info.magnolia.parser;
 
 import static info.magnolia.parser.Parser.failure;
 import static info.magnolia.parser.Parser.success;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.empty;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -48,7 +47,7 @@ public final class Parsers {
         return digit()
             .map(Objects::toString)
             .some()
-            .map(strings -> String.join("", strings))
+            .map(strings -> strings.collect(joining()))
             .map(Integer::parseInt);
     }
 
@@ -56,7 +55,7 @@ public final class Parsers {
         return character(predicate)
             .map(Objects::toString)
             .many()
-            .map(strings -> String.join("", strings));
+            .map(strings -> strings.collect(joining()));
     }
 
     public static Parser<String> string() {
@@ -66,20 +65,14 @@ public final class Parsers {
             .result(s)));
     }
 
-    public static <R, S> Parser<List<R>> separated(Parser<R> parser, Parser<S> separator) {
-        Parser<List<R>> ne = parser
+    public static <R, S> Parser<Stream<R>> separated(Parser<R> parser, Parser<S> separator) {
+        var nonEmpty = parser
             .andThen(r ->
                  separator
                      .then(parser)
                      .many()
-                         .map(rs -> cat(r, rs)));
-        return ne.orElse(constant(emptyList()));
-    }
-
-    // michid improve, dedup
-    private static <T> List<T> cat(T a, List<T> as) {
-        return concat(Stream.of(a), as.stream())
-                .collect(toList());
+                         .map(rs -> concat(Stream.of(r), rs)));
+        return nonEmpty.orElse(constant(empty()));
     }
 
 }

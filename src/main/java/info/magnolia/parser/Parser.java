@@ -1,14 +1,14 @@
 package info.magnolia.parser;
 
 import static info.magnolia.parser.Parsers.constant;
-import static java.util.Collections.emptyList;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.empty;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 interface Parser<T> {
 
@@ -110,23 +110,16 @@ interface Parser<T> {
         };
     }
 
-    default Parser<List<T>> some() {
+    default Parser<Stream<T>> some() {
         return this
             .andThen(a ->
                 this.many()
-            .map(as -> list(a, as)));
+            .map(as -> concat(Stream.of(a), as)));
     }
 
-    private static <T> List<T> list(T a, List<T> as) {
-        var list = new ArrayList<T>();
-        list.add(a);
-        list.addAll(as);
-        return list;
-    }
-
-    default Parser<List<T>> many() {
+    default Parser<Stream<T>> many() {
         return some()
             .orElse(
-               constant(emptyList()));
+               constant(empty()));
     }
 }
