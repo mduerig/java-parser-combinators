@@ -57,10 +57,6 @@ public class JsonParser {
     }
 
     public static class JsonNull implements JsonValue {
-        public static <T> JsonNull create(T ignore) {
-            return new JsonNull();
-        }
-
         @Override
         public boolean equals(Object obj) {
             return obj.getClass().equals(JsonNull.class);
@@ -99,7 +95,7 @@ public class JsonParser {
     public static Parser<JsonValue> jsonNull() {
         return
             literal("null")
-                .map(JsonNull::create);
+                .result(new JsonNull());
     }
 
     public static Parser<JsonValue> jsonBool() {
