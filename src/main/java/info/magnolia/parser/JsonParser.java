@@ -105,11 +105,11 @@ public class JsonParser {
     public static Parser<JsonValue> jsonBool() {
         return
             literal("true")
-                    .map(Boolean::parseBoolean)
+                    .result(true)
                     .<JsonValue>map(JsonBool::new)
                 .orElse(() ->
             literal("false")
-                    .map(Boolean::parseBoolean)
+                    .result(false)
                     .map(JsonBool::new));
     }
 
