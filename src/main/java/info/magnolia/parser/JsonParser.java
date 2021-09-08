@@ -57,7 +57,7 @@ public class JsonParser {
     }
 
     public static class JsonNull implements JsonValue {
-        public static <T> JsonNull create(T t) {
+        public static <T> JsonNull create(T ignore) {
             return new JsonNull();
         }
 
