@@ -4,12 +4,12 @@ import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
 import static info.magnolia.parser.Parsers.separated;
 import static info.magnolia.parser.Parsers.string;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class JsonParser {
     interface JsonValue {}
@@ -127,7 +127,7 @@ public class JsonParser {
             separated(jsonValue(), literal(",")))
                 .andThen(values ->
              literal("]")
-                .result(values.collect(Collectors.toList())))
+                .result(values.collect(toList())))
                     .map(JsonArray::new);
     }
 
