@@ -102,11 +102,10 @@ public class JsonParser {
         return
             literal("true")
                     .result(true)
-                    .<JsonValue>map(JsonBool::new)
                 .orElse(() ->
             literal("false")
-                    .result(false)
-                    .map(JsonBool::new));
+                    .result(false))
+                .map(JsonBool::new);
     }
 
     public static Parser<JsonValue> jsonNumber() {
