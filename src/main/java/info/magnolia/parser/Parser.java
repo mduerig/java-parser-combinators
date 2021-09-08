@@ -112,10 +112,12 @@ interface Parser<T> {
     }
 
     default Parser<Stream<T>> some() {
-        return this
-            .andThen(a ->
-                this.many()
-            .map(as -> concat(Stream.of(a), as)));
+        return
+            this
+                .andThen(r ->
+            this.many()
+                .map(rs ->
+            concat(Stream.of(r), rs)));
     }
 
     default Parser<Stream<T>> many() {

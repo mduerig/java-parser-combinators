@@ -23,7 +23,8 @@ public final class Parsers {
     }
 
     public static Parser<Character> character(Predicate<Character> predicate) {
-        return anyChar().filter(predicate);
+        return anyChar()
+            .filter(predicate);
     }
 
     public static Parser<Character> character(Character character) {
@@ -36,11 +37,15 @@ public final class Parsers {
 
     public static Parser<String> literal(String literal) {
         return literal.chars()
-                .mapToObj(c -> character((char) c)
-                    .map(Object::toString))
+                .mapToObj(c ->
+                    character((char) c)
+                        .map(Object::toString))
                 .reduce(
                     constant(""),
-                    (p1, p2) -> p1.andThen(s1 -> p2.map(s2 -> s1 + s2)));
+                    (parser1, parser2) ->
+                        parser1.andThen(letter1 ->
+                        parser2.map(letter2 ->
+                            letter1 + letter2)));
     }
 
     public static Parser<Integer> integer() {
@@ -59,19 +64,24 @@ public final class Parsers {
     }
 
     public static Parser<String> string() {
-        return character('"')
-            .then(chars(c -> c != '"')
-            .andThen(s -> character('"')
-            .result(s)));
+        return
+            character('"')
+                .then(
+            chars(c -> c != '"')
+                .andThen(s ->
+            character('"')
+                .result(s)));
     }
 
     public static <R, S> Parser<Stream<R>> delimited(Parser<R> parser, Parser<S> deliminator) {
-        var nonEmpty = parser
-            .andThen(r ->
-                 deliminator
-                     .then(parser)
-                     .many()
-                         .map(rs -> concat(Stream.of(r), rs)));
+        var nonEmpty =
+            parser
+                .andThen(r ->
+            deliminator
+                .then(
+            parser).many()
+                .map(rs ->
+            concat(Stream.of(r), rs)));
         return
             nonEmpty
                 .orElse(() ->
