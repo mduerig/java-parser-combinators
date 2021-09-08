@@ -16,12 +16,12 @@ interface Parser<T> {
     class Result<T> {
         private final T result;
         private final String error;
-        private final String rest;
+        private final String remainder;
 
-        private Result(T result, String error, String rest) {
+        private Result(T result, String error, String remainder) {
             this.result = result;
             this.error = error;
-            this.rest = rest;
+            this.remainder = remainder;
         }
 
         public boolean isSuccess() {
@@ -37,12 +37,12 @@ interface Parser<T> {
                 return false;
             }
             Result<?> that = (Result<?>) other;
-            return Objects.equals(result, that.result) && Objects.equals(rest, that.rest);
+            return Objects.equals(result, that.result) && Objects.equals(remainder, that.remainder);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(result, rest);
+            return Objects.hash(result, remainder);
         }
 
         @Override
@@ -50,25 +50,25 @@ interface Parser<T> {
             return new StringJoiner(", ", Result.class.getSimpleName() + "[", "]")
                     .add("result=" + result)
                     .add("error=" + error)
-                    .add("rest='" + rest + "'")
+                    .add("remainder='" + remainder + "'")
                     .toString();
         }
 
         public <R> Result<R> map(Function<T, R> f) {
             return isSuccess()
-               ? success(f.apply(result), rest)
-               : failure(error, rest);
+               ? success(f.apply(result), remainder)
+               : failure(error, remainder);
         }
     }
 
     Result<T> parse(String s);
 
-    static <T> Result<T> success(T result, String rest) {
-        return new Result<>(result, null, rest);
+    static <T> Result<T> success(T result, String remainder) {
+        return new Result<>(result, null, remainder);
     }
 
-    static <T> Result<T> failure(String error, String rest) {
-        return new Result<>(null, error, rest);
+    static <T> Result<T> failure(String error, String remainder) {
+        return new Result<>(null, error, remainder);
     }
 
     default Parser<T> filter(Predicate<T> predicate) {
@@ -93,8 +93,8 @@ interface Parser<T> {
             var r1 = parse(s);
             return r1.isSuccess()
                 ? f.apply(r1.result)
-                    .parse(r1.rest)
-                : failure(r1.error, r1.rest);
+                    .parse(r1.remainder)
+                : failure(r1.error, r1.remainder);
         };
     }
 
