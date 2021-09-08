@@ -8,6 +8,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class JsonParser {
@@ -17,23 +18,52 @@ public class JsonParser {
         private final String value;
 
         public JsonString(String value) {this.value = value;}
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonString that = (JsonString) o;
+            return Objects.equals(value, that.value);
+        }
     }
 
     public static class JsonNumber implements JsonValue {
         private final int value;
 
         public JsonNumber(int value) {this.value = value;}
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonNumber that = (JsonNumber) o;
+            return value == that.value;
+        }
     }
 
     public static class JsonBool implements JsonValue {
         private final boolean value;
 
         public JsonBool(boolean value) {this.value = value;}
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonBool jsonBool = (JsonBool) o;
+            return value == jsonBool.value;
+        }
     }
 
     public static class JsonNull implements JsonValue {
         public static <T> JsonNull create(T t) {
             return new JsonNull();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj.getClass().equals(JsonNull.class);
         }
     }
 
@@ -42,12 +72,28 @@ public class JsonParser {
 
         public JsonObject(
                 Map<String, JsonValue> value) {this.value = value;}
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonObject that = (JsonObject) o;
+            return Objects.equals(value, that.value);
+        }
     }
 
     public static class JsonArray implements JsonValue {
         private final List<JsonValue> value;
 
         public JsonArray(List<JsonValue> value) {this.value = value;}
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonArray jsonArray = (JsonArray) o;
+            return Objects.equals(value, jsonArray.value);
+        }
     }
 
     public static Parser<JsonValue> jsonNull() {
@@ -61,7 +107,7 @@ public class JsonParser {
             literal("true")
                     .map(Boolean::parseBoolean)
                     .<JsonValue>map(JsonBool::new)
-                .orElse(
+                .orElse(() ->
             literal("false")
                     .map(Boolean::parseBoolean)
                     .map(JsonBool::new));
@@ -130,17 +176,17 @@ public class JsonParser {
     public static Parser<JsonValue> jsonValue() {
         return
             jsonNull()
-                .orElse(
+                .orElse(() ->
             jsonString()
-                .orElse(
+                .orElse(() ->
             jsonNull()
-                .orElse(
+                .orElse(() ->
             jsonNumber()
-                .orElse(
+                .orElse(() ->
             jsonString()
-                .orElse(
+                .orElse(() ->
             jsonArray()
-                .orElse(
+                .orElse(() ->
             jsonObject()))))));
     }
 

@@ -1,5 +1,11 @@
 package info.magnolia.parser;
 
+import static info.magnolia.parser.JsonParser.jsonArray;
+import static info.magnolia.parser.JsonParser.jsonBool;
+import static info.magnolia.parser.JsonParser.jsonNull;
+import static info.magnolia.parser.JsonParser.jsonNumber;
+import static info.magnolia.parser.JsonParser.jsonObject;
+import static info.magnolia.parser.JsonParser.jsonString;
 import static info.magnolia.parser.Parser.success;
 import static info.magnolia.parser.Parsers.anyChar;
 import static info.magnolia.parser.Parsers.character;
@@ -14,9 +20,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import info.magnolia.parser.JsonParser.JsonArray;
+import info.magnolia.parser.JsonParser.JsonBool;
+import info.magnolia.parser.JsonParser.JsonNull;
+import info.magnolia.parser.JsonParser.JsonNumber;
+import info.magnolia.parser.JsonParser.JsonObject;
+import info.magnolia.parser.JsonParser.JsonString;
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -49,7 +62,7 @@ public class ParserTest {
     public void orElse() {
         var parser =
             character('a')
-                .orElse(
+                .orElse(() ->
             character('b'));
 
         var result1 = parser.parse("ax");
@@ -132,6 +145,49 @@ public class ParserTest {
         assertEquals(success(List.of("a", "a"), "x"), result3);
     }
 
+    @Test
+    public void jsonNullParser() {
+        assertEquals(success(new JsonNull(), "x"), jsonNull().parse("nullx"));
+    }
+
+    @Test
+    public void jsonBoolParser() {
+        assertEquals(success(new JsonBool(true), "x"), jsonBool().parse("truex"));
+        assertEquals(success(new JsonBool(false), "x"), jsonBool().parse("falsex"));
+    }
+
+    @Test
+    public void jsonNumberParser() {
+        assertEquals(success(new JsonNumber(1234), "x"), jsonNumber().parse("1234x"));
+    }
+
+    @Test
+    public void jsonStringParser() {
+        assertEquals(success(new JsonString("foobar"), "x"), jsonString().parse("\"foobar\"x"));
+    }
+
+    @Test
+    public void jsonArrayParser() {
+        assertEquals(success(new JsonArray(List.of()), "x"), jsonArray().parse("[]x"));
+        assertEquals(success(new JsonArray(List.of(new JsonNumber(1), new JsonNumber(2), new JsonNumber(3))), "x"), jsonArray().parse("[1,2,3]x"));
+    }
+
+    @Test
+    public void jsonObjectParser() {
+        assertEquals(success(new JsonObject(Map.of()), "x"), jsonObject().parse("{}x"));
+        assertEquals(
+            success(
+                new JsonObject(Map.of(
+                    "int", new JsonNumber(5),
+                    "string", new JsonString("foo"),
+                    "array", new JsonArray(List.of(
+                        new JsonNumber(1),
+                        new JsonNumber(2),
+                        new JsonNumber(3))),
+                    "object", new JsonObject(Map.of()))),
+                "x"),
+            jsonObject().parse("{\"int\"=5,\"string\"=\"foo\",\"array\"=[1,2,3],\"object\"={}}x"));
+    }
 
     private static <T> List<T> toList(Stream<T> stream) {
         return stream.collect(Collectors.toList());

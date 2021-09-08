@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 interface Parser<T> {
@@ -75,7 +76,7 @@ interface Parser<T> {
             var r = parse(s);
             return r.isSuccess() && predicate.test(r.result)
                ? r
-               : failure("Unexpected input" + s, s);
+               : failure("Unexpected input " + s, s);
         };
     }
 
@@ -101,12 +102,12 @@ interface Parser<T> {
         return andThen(__ -> p);
     }
 
-    default Parser<T> orElse(Parser<T> other) {
+    default Parser<T> orElse(Supplier<Parser<T>> other) {
         return s -> {
             var r1 = parse(s);
             return r1.isSuccess()
                 ? r1
-                : other.parse(s);
+                : other.get().parse(s);
         };
     }
 
@@ -119,7 +120,7 @@ interface Parser<T> {
 
     default Parser<Stream<T>> many() {
         return some()
-            .orElse(
+            .orElse(() ->
                constant(empty()));
     }
 }

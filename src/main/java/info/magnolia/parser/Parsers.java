@@ -72,7 +72,10 @@ public final class Parsers {
                      .then(parser)
                      .many()
                          .map(rs -> concat(Stream.of(r), rs)));
-        return nonEmpty.orElse(constant(empty()));
+        return
+            nonEmpty
+                .orElse(() ->
+            constant(empty()));
     }
 
 }
