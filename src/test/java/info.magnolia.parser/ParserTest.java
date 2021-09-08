@@ -13,7 +13,7 @@ import static info.magnolia.parser.Parsers.chars;
 import static info.magnolia.parser.Parsers.digit;
 import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
-import static info.magnolia.parser.Parsers.separated;
+import static info.magnolia.parser.Parsers.delimited;
 import static info.magnolia.parser.Parsers.string;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -129,8 +129,8 @@ public class ParserTest {
     }
 
     @Test
-    public void separatedParser() {
-        var parser = separated(literal("a"), literal(","));
+    public void delimitedParser() {
+        var parser = delimited(literal("a"), literal(","));
 
         var result1 = parser.parse("x")
                 .map(ParserTest::toList);

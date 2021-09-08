@@ -2,7 +2,7 @@ package info.magnolia.parser;
 
 import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
-import static info.magnolia.parser.Parsers.separated;
+import static info.magnolia.parser.Parsers.delimited;
 import static info.magnolia.parser.Parsers.string;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -124,7 +124,7 @@ public class JsonParser {
         return
             literal("[")
                 .then(
-            separated(jsonValue(), literal(",")))
+                        delimited(jsonValue(), literal(",")))
                 .andThen(values ->
              literal("]")
                 .result(values.collect(toList())))
@@ -161,9 +161,9 @@ public class JsonParser {
         return
             literal("{")
                 .then(
-            separated(binding, literal(",")))
+            delimited(binding, literal(",")))
                 .andThen(bindings ->
-             literal("}")
+            literal("}")
                 .result(bindings.collect(toMap(KeyValue::getKey, KeyValue::getValue))))
                     .map(JsonObject::new);
     }

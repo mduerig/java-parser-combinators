@@ -65,10 +65,10 @@ public final class Parsers {
             .result(s)));
     }
 
-    public static <R, S> Parser<Stream<R>> separated(Parser<R> parser, Parser<S> separator) {
+    public static <R, S> Parser<Stream<R>> delimited(Parser<R> parser, Parser<S> deliminator) {
         var nonEmpty = parser
             .andThen(r ->
-                 separator
+                 deliminator
                      .then(parser)
                      .many()
                          .map(rs -> concat(Stream.of(r), rs)));
