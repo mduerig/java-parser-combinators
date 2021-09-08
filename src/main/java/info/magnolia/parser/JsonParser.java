@@ -57,9 +57,9 @@ public class JsonParser {
         return
             literal("[")
                 .then(
-                        delimited(jsonValue(), literal(",")))
+            delimited(jsonValue(), literal(",")))
                 .andThen(values ->
-             literal("]")
+            literal("]")
                 .result(values.collect(toList())))
                     .map(JsonArray::new);
     }
