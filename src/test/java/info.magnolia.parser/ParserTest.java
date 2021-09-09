@@ -15,6 +15,7 @@ import static info.magnolia.parser.Parsers.digit;
 import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
 import static info.magnolia.parser.Parsers.string;
+import static info.magnolia.parser.Parsers.sumOfDigits;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,6 +46,12 @@ public class ParserTest {
     public void digitParser() {
         var result = digit().parse("5x");
         assertEquals(success('5', "x"), result);
+    }
+
+    @Test
+    public void sumParser() {
+        var result = sumOfDigits().parse("5+7x");
+        assertEquals(success(12, "x"), result);
     }
 
     @Test

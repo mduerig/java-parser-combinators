@@ -35,6 +35,19 @@ public final class Parsers {
         return character(Character::isDigit);
     }
 
+    public static Parser<Integer> sumOfDigits() {
+        var digit = digit().map(c -> c - '0');
+
+        return
+            digit
+                .andThen(d1 ->
+            character('+')
+                .then(
+            digit
+                .map(d2 ->
+            d1 + d2)));
+    }
+
     public static Parser<String> literal(String literal) {
         var letterParsers = literal.chars()
             .mapToObj(c ->
