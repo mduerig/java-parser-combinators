@@ -1,6 +1,6 @@
 package info.magnolia.parser;
 
-import static info.magnolia.parser.Parsers.constant;
+import static info.magnolia.parser.Parsers.nothing;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.empty;
 
@@ -86,6 +86,6 @@ interface Parser<T> {
         return
             some()
                 .orElse(() ->
-            constant(empty()));
+            nothing(empty()));
     }
 }

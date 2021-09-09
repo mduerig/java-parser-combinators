@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public final class Parsers {
 
-    public static <R> Parser<R> constant(R result) {
+    public static <R> Parser<R> nothing(R result) {
         return input -> success(result, input);
     }
 
@@ -41,7 +41,7 @@ public final class Parsers {
                     character((char) c)
                         .map(Object::toString))
                 .reduce(
-                    constant(""),
+                    nothing(""),
                     (parser1, parser2) ->
                         parser1.andThen(letter1 ->
                         parser2.map(letter2 ->
@@ -83,7 +83,7 @@ public final class Parsers {
         return
             nonEmpty
                 .orElse(() ->
-            constant(empty()));
+            nothing(empty()));
     }
 
 }
