@@ -10,19 +10,14 @@ import static info.magnolia.parser.Parser.success;
 import static info.magnolia.parser.Parsers.anyChar;
 import static info.magnolia.parser.Parsers.character;
 import static info.magnolia.parser.Parsers.chars;
+import static info.magnolia.parser.Parsers.delimited;
 import static info.magnolia.parser.Parsers.digit;
 import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
-import static info.magnolia.parser.Parsers.delimited;
 import static info.magnolia.parser.Parsers.string;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import info.magnolia.parser.JsonParser.JsonArray;
 import info.magnolia.parser.JsonParser.JsonBool;
@@ -30,6 +25,12 @@ import info.magnolia.parser.JsonParser.JsonNull;
 import info.magnolia.parser.JsonParser.JsonNumber;
 import info.magnolia.parser.JsonParser.JsonObject;
 import info.magnolia.parser.JsonParser.JsonString;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -180,13 +181,14 @@ public class ParserTest {
                 new JsonObject(Map.of(
                     "int", new JsonNumber(5),
                     "string", new JsonString("foo"),
-                    "array", new JsonArray(List.of(
-                        new JsonNumber(1),
-                        new JsonNumber(2),
-                        new JsonNumber(3))),
-                    "object", new JsonObject(Map.of()))),
+                    "emptyArray", new JsonArray(emptyList()),
+                    "object", new JsonObject(Map.of(
+                            "array", new JsonArray(List.of(
+                                new JsonNumber(1),
+                                new JsonNumber(2),
+                                new JsonNumber(3))))))),
                 "x"),
-            jsonObject().parse("{\"int\"=5,\"string\"=\"foo\",\"array\"=[1,2,3],\"object\"={}}x"));
+            jsonObject().parse("{\"int\"=5,\"string\"=\"foo\",\"emptyArray\"=[],\"object\"={\"array\"=[1,2,3]}}x"));
     }
 
     private static <T> List<T> toList(Stream<T> stream) {
