@@ -36,16 +36,17 @@ public final class Parsers {
     }
 
     public static Parser<String> literal(String literal) {
-        return literal.chars()
-                .mapToObj(c ->
-                    character((char) c)
-                        .map(Object::toString))
-                .reduce(
-                    nothing(""),
-                    (parser1, parser2) ->
-                        parser1.andThen(letter1 ->
-                        parser2.map(letter2 ->
-                            letter1 + letter2)));
+        var letterParsers = literal.chars()
+            .mapToObj(c ->
+                character((char) c)
+                    .map(Object::toString));
+
+        return letterParsers.reduce(
+            nothing(""),
+            (parser1, parser2) ->
+                parser1.andThen(letter1 ->
+                parser2.map(letter2 ->
+                    letter1 + letter2)));
     }
 
     public static Parser<Integer> integer() {
