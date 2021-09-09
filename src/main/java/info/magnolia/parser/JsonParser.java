@@ -67,7 +67,7 @@ public class JsonParser {
     public static Parser<JsonValue> jsonObject() {
         record KeyValue(String key, JsonValue value) {}
 
-        var binding =
+        var keyValuePair =
             string()
                 .andThen(key ->
             literal("=")
@@ -79,10 +79,10 @@ public class JsonParser {
         return
             literal("{")
                 .then(
-            delimited(binding, literal(",")))
-                .andThen(bindings ->
+            delimited(keyValuePair, literal(",")))
+                .andThen(keyValuePairs ->
             literal("}")
-                .result(bindings.collect(toMap(KeyValue::key, KeyValue::value))))
+                .result(keyValuePairs.collect(toMap(KeyValue::key, KeyValue::value))))
                     .map(JsonObject::new);
     }
 

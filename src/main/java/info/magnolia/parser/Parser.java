@@ -64,12 +64,12 @@ interface Parser<T> {
         return andThen(__ -> parser);
     }
 
-    default Parser<T> orElse(Supplier<Parser<T>> otherParser) {
+    default Parser<T> orElse(Supplier<Parser<T>> alternative) {
         return input -> {
             var result = parse(input);
             return result.isSuccess()
                 ? result
-                : otherParser.get().parse(input);
+                : alternative.get().parse(input);
         };
     }
 
@@ -77,14 +77,15 @@ interface Parser<T> {
         return
             this
                 .andThen(result ->
-            this.many()
+            many()
                 .map(results ->
             concat(Stream.of(result), results)));
     }
 
     default Parser<Stream<T>> many() {
-        return some()
-            .orElse(() ->
-               constant(empty()));
+        return
+            some()
+                .orElse(() ->
+            constant(empty()));
     }
 }

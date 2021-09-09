@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public final class Parsers {
 
     public static <R> Parser<R> constant(R result) {
-        return s -> success(result, s);
+        return input -> success(result, input);
     }
 
     public static Parser<Character> anyChar() {
