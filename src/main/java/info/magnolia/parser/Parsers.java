@@ -31,19 +31,18 @@ public final class Parsers {
         return character(c -> c == character);
     }
 
-    public static Parser<Character> digit() {
-        return character(Character::isDigit);
+    public static Parser<Integer> digit() {
+        return character(Character::isDigit)
+            .map(c -> c - '0');
     }
 
     record Coordinates(Character c, Integer i) {}
 
     public static Parser<Coordinates> coordinate() {
-        var digit = digit().map(c -> c - '0');
-
         return
             anyChar()
                 .andThen(c ->
-            digit
+            digit()
                 .map(d -> new Coordinates(c, d)));
     }
 
@@ -63,10 +62,9 @@ public final class Parsers {
 
     public static Parser<Integer> integer() {
         return digit()
-            .map(Objects::toString)
             .some()
-            .map(strings -> strings.collect(joining()))
-            .map(Integer::parseInt);
+            .map(digits ->
+                digits.reduce(0, (d1, d2) -> d1 * 10 + d2));
     }
 
     public static Parser<String> chars(Predicate<Character> predicate) {

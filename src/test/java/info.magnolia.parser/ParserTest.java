@@ -45,7 +45,7 @@ public class ParserTest {
     @Test
     public void digitParser() {
         var result = digit().parse("5x");
-        assertEquals(success('5', "x"), result);
+        assertEquals(success(5, "x"), result);
     }
 
     @Test
