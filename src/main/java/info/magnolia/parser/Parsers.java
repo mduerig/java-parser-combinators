@@ -1,6 +1,7 @@
 package info.magnolia.parser;
 
 import static info.magnolia.parser.Parser.failure;
+import static info.magnolia.parser.Parser.nothing;
 import static info.magnolia.parser.Parser.success;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.concat;
@@ -11,10 +12,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public final class Parsers {
-
-    public static <R> Parser<R> nothing(R result) {
-        return input -> success(result, input);
-    }
 
     public static Parser<Character> anyChar() {
         return input -> input.isEmpty()

@@ -1,6 +1,5 @@
 package info.magnolia.parser;
 
-import static info.magnolia.parser.Parsers.nothing;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.empty;
 
@@ -31,6 +30,10 @@ interface Parser<T> {
 
     static <T> Result<T> failure(String error, String remainder) {
         return new Result<>(null, error, remainder);
+    }
+
+    static <R> Parser<R> nothing(R result) {
+        return input -> success(result, input);
     }
 
     default Parser<T> filter(Predicate<T> predicate) {
