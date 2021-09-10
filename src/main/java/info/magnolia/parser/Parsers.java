@@ -55,9 +55,10 @@ public final class Parsers {
         return letterParsers.reduce(
             nothing(""),
             (parser1, parser2) ->
-                parser1.andThen(letter1 ->
-                parser2.map(letter2 ->
-                    letter1 + letter2)));
+                parser1
+                    .andThen(letter1 ->
+                parser2.
+                    map(letter2 -> letter1 + letter2)));
     }
 
     public static Parser<Integer> integer() {
