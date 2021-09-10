@@ -35,17 +35,16 @@ public final class Parsers {
         return character(Character::isDigit);
     }
 
-    public static Parser<Integer> sumOfDigits() {
+    record Coordinates(Character c, Integer i) {}
+
+    public static Parser<Coordinates> coordinate() {
         var digit = digit().map(c -> c - '0');
 
         return
+            anyChar()
+                .andThen(c ->
             digit
-                .andThen(d1 ->
-            character('+')
-                .then(
-            digit
-                .map(d2 ->
-            d1 + d2)));
+                .map(d -> new Coordinates(c, d)));
     }
 
     public static Parser<String> literal(String literal) {

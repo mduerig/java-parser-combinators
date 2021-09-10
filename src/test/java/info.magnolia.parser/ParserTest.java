@@ -10,12 +10,12 @@ import static info.magnolia.parser.Parser.success;
 import static info.magnolia.parser.Parsers.anyChar;
 import static info.magnolia.parser.Parsers.character;
 import static info.magnolia.parser.Parsers.chars;
+import static info.magnolia.parser.Parsers.coordinate;
 import static info.magnolia.parser.Parsers.delimited;
 import static info.magnolia.parser.Parsers.digit;
 import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
 import static info.magnolia.parser.Parsers.string;
-import static info.magnolia.parser.Parsers.sumOfDigits;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,9 +49,9 @@ public class ParserTest {
     }
 
     @Test
-    public void sumParser() {
-        var result = sumOfDigits().parse("5+7x");
-        assertEquals(success(12, "x"), result);
+    public void coordinateParser() {
+        var result = coordinate().parse("h7x");
+        assertEquals(success(new Parsers.Coordinates('h', 7), "x"), result);
     }
 
     @Test
