@@ -1,5 +1,6 @@
 package info.magnolia.parser;
 
+import static info.magnolia.parser.Parser.result;
 import static info.magnolia.parser.Parsers.delimited;
 import static info.magnolia.parser.Parsers.integer;
 import static info.magnolia.parser.Parsers.literal;
@@ -28,17 +29,30 @@ public class JsonParser {
     public static Parser<JsonValue> jsonNull() {
         return
             literal("null")
-                .result(new JsonNull());
+                .then(
+            result(
+                new JsonNull()));
     }
 
     public static Parser<JsonValue> jsonBool() {
-        return
+        var parseTrue =
             literal("true")
-                    .result(true)
-                .orElse(() ->
+                .then(
+            result(
+                true));
+
+        var parseFalse =
             literal("false")
-                    .result(false))
-                .map(JsonBool::new);
+                .then(
+            result(
+                false));
+
+        return
+            parseTrue
+                .orElse(() ->
+            parseFalse)
+                .map(
+            JsonBool::new);
     }
 
     public static Parser<JsonValue> jsonNumber() {
@@ -60,8 +74,10 @@ public class JsonParser {
             delimited(jsonValue(), literal(",")))
                 .andThen(values ->
             literal("]")
-                .result(values.collect(toList())))
-                    .map(JsonArray::new);
+                .then(
+            result(
+                values.collect(toList())))
+                    .map(JsonArray::new));
     }
 
     public static Parser<JsonValue> jsonObject() {
@@ -73,8 +89,9 @@ public class JsonParser {
             literal("=")
                 .then(
             jsonValue())
-                .map(value ->
-                    new KeyValue(key, value)));
+                .andThen(value ->
+            result(
+                new KeyValue(key, value))));
 
         return
             literal("{")
@@ -82,8 +99,10 @@ public class JsonParser {
             delimited(keyValuePair, literal(",")))
                 .andThen(keyValuePairs ->
             literal("}")
-                .result(keyValuePairs.collect(toMap(KeyValue::key, KeyValue::value))))
-                    .map(JsonObject::new);
+                .then(
+            result(
+                keyValuePairs.collect(toMap(KeyValue::key, KeyValue::value))))
+                    .map(JsonObject::new));
     }
 
     public static Parser<JsonValue> jsonValue() {

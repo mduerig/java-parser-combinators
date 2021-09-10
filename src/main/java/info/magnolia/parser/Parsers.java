@@ -1,7 +1,7 @@
 package info.magnolia.parser;
 
 import static info.magnolia.parser.Parser.failure;
-import static info.magnolia.parser.Parser.nothing;
+import static info.magnolia.parser.Parser.result;
 import static info.magnolia.parser.Parser.success;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.concat;
@@ -40,8 +40,9 @@ public final class Parsers {
             anyChar()
                 .andThen(c ->
             digit()
-                .map(d ->
-                     new Coordinate(c, d)));
+                .andThen(d ->
+            result(
+                 new Coordinate(c, d))));
     }
 
     public static Parser<String> literal(String literal) {
@@ -51,12 +52,14 @@ public final class Parsers {
                     .map(Object::toString));
 
         return letterParsers.reduce(
-            nothing(""),
+            result(""),
             (parser1, parser2) ->
                 parser1
                     .andThen(letter1 ->
                 parser2.
-                    map(letter2 -> letter1 + letter2)));
+                    andThen(letter2 ->
+                result(
+                    letter1 + letter2))));
     }
 
     public static Parser<Integer> integer() {
@@ -80,7 +83,9 @@ public final class Parsers {
             chars(c -> c != '"')
                 .andThen(s ->
             character('"')
-                .result(s)));
+                .then(
+            result(
+                s))));
     }
 
     public static <R, S> Parser<Stream<R>> delimited(Parser<R> parser, Parser<S> deliminator) {
@@ -88,12 +93,14 @@ public final class Parsers {
             parser
                 .andThen(result ->
             deliminator.then(parser).many()
-                .map(results ->
-            concat(Stream.of(result), results)));
+                .andThen(results ->
+            result(
+                concat(Stream.of(result), results))));
         return
             nonEmpty
                 .orElse(() ->
-            nothing(empty()));
+            result(
+                empty()));
     }
 
 }

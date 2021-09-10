@@ -32,7 +32,7 @@ interface Parser<T> {
         return new Result<>(null, error, remainder);
     }
 
-    static <R> Parser<R> nothing(R result) {
+    static <R> Parser<R> result(R result) {
         return input -> success(result, input);
     }
 
@@ -47,10 +47,6 @@ interface Parser<T> {
 
     default <R> Parser<R> map(Function<T, R> f) {
         return input -> parse(input).map(f);
-    }
-
-    default <R> Parser<R> result(R value) {
-        return map(__ -> value);
     }
 
     default <R> Parser<R> andThen(Function<T, Parser<R>> f) {
@@ -76,19 +72,25 @@ interface Parser<T> {
         };
     }
 
+    default Parser<T> once() {
+        return this;
+    }
+
     default Parser<Stream<T>> some() {
         return
-            this
+            once()
                 .andThen(result ->
             many()
-                .map(results ->
-            concat(Stream.of(result), results)));
+                .andThen(results ->
+            result(
+                concat(Stream.of(result), results))));
     }
 
     default Parser<Stream<T>> many() {
         return
             some()
                 .orElse(() ->
-            nothing(empty()));
+            result(
+                empty()));
     }
 }
