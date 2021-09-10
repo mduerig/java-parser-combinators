@@ -20,18 +20,18 @@ import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import info.magnolia.parser.JsonParser.JsonArray;
 import info.magnolia.parser.JsonParser.JsonBool;
 import info.magnolia.parser.JsonParser.JsonNull;
 import info.magnolia.parser.JsonParser.JsonNumber;
 import info.magnolia.parser.JsonParser.JsonObject;
 import info.magnolia.parser.JsonParser.JsonString;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import info.magnolia.parser.Parsers.Coordinate;
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -51,7 +51,7 @@ public class ParserTest {
     @Test
     public void coordinateParser() {
         var result = coordinate().parse("h7x");
-        assertEquals(success(new Parsers.Coordinates('h', 7), "x"), result);
+        assertEquals(success(new Coordinate('h', 7), "x"), result);
     }
 
     @Test
