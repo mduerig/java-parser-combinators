@@ -74,7 +74,7 @@ public class JsonParser {
                 .then(
             jsonValue())
                 .map(value ->
-            new KeyValue(key, value)));
+                    new KeyValue(key, value)));
 
         return
             literal("{")

@@ -36,14 +36,15 @@ public final class Parsers {
             .map(c -> c - '0');
     }
 
-    record Coordinates(Character c, Integer i) {}
+    public record Coordinates(Character c, Integer i) {}
 
     public static Parser<Coordinates> coordinate() {
         return
             anyChar()
                 .andThen(c ->
             digit()
-                .map(d -> new Coordinates(c, d)));
+                .map(d ->
+                     new Coordinates(c, d)));
     }
 
     public static Parser<String> literal(String literal) {
