@@ -66,7 +66,7 @@ public final class Parsers {
         return digit()
             .some()
             .map(digits ->
-                digits.reduce(0, (d1, d2) -> d1 * 10 + d2));
+                digits.reduce(0, (n, d) -> n * 10 + d));
     }
 
     public static Parser<String> chars(Predicate<Character> predicate) {
