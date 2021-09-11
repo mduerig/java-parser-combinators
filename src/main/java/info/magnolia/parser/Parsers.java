@@ -13,14 +13,14 @@ import java.util.stream.Stream;
 
 public final class Parsers {
 
-    public static Parser<Character> anyChar() {
+    public static Parser<Character> character() {
         return input -> input.isEmpty()
            ? failure("Expected Character, found EOF", "")
            : success(input.charAt(0), input.substring(1));
     }
 
     public static Parser<Character> character(Predicate<Character> predicate) {
-        return anyChar()
+        return character()
             .filter(predicate);
     }
 
@@ -37,7 +37,7 @@ public final class Parsers {
 
     public static Parser<Coordinate> coordinate() {
         return
-            anyChar()
+            character()
                 .andThen(c ->
             digit()
                 .andThen(d ->

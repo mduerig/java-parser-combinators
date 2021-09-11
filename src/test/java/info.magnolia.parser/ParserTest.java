@@ -7,7 +7,6 @@ import static info.magnolia.parser.JsonParser.jsonNumber;
 import static info.magnolia.parser.JsonParser.jsonObject;
 import static info.magnolia.parser.JsonParser.jsonString;
 import static info.magnolia.parser.Parser.success;
-import static info.magnolia.parser.Parsers.anyChar;
 import static info.magnolia.parser.Parsers.character;
 import static info.magnolia.parser.Parsers.chars;
 import static info.magnolia.parser.Parsers.coordinate;
@@ -38,7 +37,7 @@ public class ParserTest {
 
     @Test
     public void charParser() {
-        var result = anyChar().parse("ax");
+        var result = Parsers.character().parse("ax");
         assertEquals(success('a', "x"), result);
     }
 
