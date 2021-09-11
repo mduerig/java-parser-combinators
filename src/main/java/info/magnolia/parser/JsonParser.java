@@ -51,8 +51,7 @@ public class JsonParser {
             parseTrue
                 .orElse(() ->
             parseFalse)
-                .map(
-            JsonBool::new);
+                .map(JsonBool::new);
     }
 
     public static Parser<JsonValue> jsonNumber() {
