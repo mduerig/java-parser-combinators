@@ -57,7 +57,7 @@ public class ParserTest {
     public void andThen() {
         var parser =
             character('a')
-                .andThen(c1 ->
+                .read(c1 ->
             character('b')
                 .map(c2 -> c1.toString() + c2.toString()));
 

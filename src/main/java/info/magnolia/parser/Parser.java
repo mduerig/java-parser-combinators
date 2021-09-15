@@ -49,7 +49,7 @@ interface Parser<T> {
         return input -> parse(input).map(f);
     }
 
-    default <R> Parser<R> andThen(Function<T, Parser<R>> f) {
+    default <R> Parser<R> read(Function<T, Parser<R>> f) {
         return input -> {
             var result = parse(input);
             return result.isSuccess()
@@ -59,8 +59,8 @@ interface Parser<T> {
         };
     }
 
-    default <R> Parser<R> then(Parser<R> parser) {
-        return andThen(__ -> parser);
+    default <R> Parser<R> andThen(Parser<R> parser) {
+        return read(__ -> parser);
     }
 
     default Parser<T> orElse(Supplier<Parser<T>> alternative) {
@@ -79,9 +79,9 @@ interface Parser<T> {
     default Parser<Stream<T>> some() {
         return
             once()
-                .andThen(result ->
+                .read(result ->
             many()
-                .andThen(results ->
+                .read(results ->
             result(
                 concat(Stream.of(result), results))));
     }

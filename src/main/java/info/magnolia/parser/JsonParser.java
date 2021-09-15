@@ -29,7 +29,7 @@ public class JsonParser {
     public static Parser<JsonValue> jsonNull() {
         return
             literal("null")
-                .then(
+                .andThen(
             result(
                 new JsonNull()));
     }
@@ -37,13 +37,13 @@ public class JsonParser {
     public static Parser<JsonValue> jsonBool() {
         var parseTrue =
             literal("true")
-                .then(
+                .andThen(
             result(
                 true));
 
         var parseFalse =
             literal("false")
-                .then(
+                .andThen(
             result(
                 false));
 
@@ -69,11 +69,11 @@ public class JsonParser {
     public static Parser<JsonValue> jsonArray() {
         return
             literal("[")
-                .then(
+                .andThen(
             delimited(jsonValue(), literal(",")))
-                .andThen(values ->
+                .read(values ->
             literal("]")
-                .then(
+                .andThen(
             result(
                 values.collect(toList())))
                     .map(JsonArray::new));
@@ -84,21 +84,21 @@ public class JsonParser {
 
         var keyValuePair =
             string()
-                .andThen(key ->
+                .read(key ->
             literal("=")
-                .then(
+                .andThen(
             jsonValue())
-                .andThen(value ->
+                .read(value ->
             result(
                 new KeyValue(key, value))));
 
         return
             literal("{")
-                .then(
+                .andThen(
             delimited(keyValuePair, literal(",")))
-                .andThen(keyValuePairs ->
+                .read(keyValuePairs ->
             literal("}")
-                .then(
+                .andThen(
             result(
                 keyValuePairs.collect(toMap(KeyValue::key, KeyValue::value))))
                     .map(JsonObject::new));

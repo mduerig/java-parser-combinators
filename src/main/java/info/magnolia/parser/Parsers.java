@@ -38,9 +38,9 @@ public final class Parsers {
     public static Parser<Coordinate> coordinate() {
         return
             character()
-                .andThen(c ->
+                .read(c ->
             digit()
-                .andThen(d ->
+                .read(d ->
             result(
                  new Coordinate(c, d))));
     }
@@ -55,9 +55,9 @@ public final class Parsers {
             result(""),
             (parser1, parser2) ->
                 parser1
-                    .andThen(letter1 ->
+                    .read(letter1 ->
                 parser2.
-                    andThen(letter2 ->
+                    read(letter2 ->
                 result(
                     letter1 + letter2))));
     }
@@ -79,11 +79,11 @@ public final class Parsers {
     public static Parser<String> string() {
         return
             character('"')
-                .then(
+                .andThen(
             chars(c -> c != '"')
-                .andThen(s ->
+                .read(s ->
             character('"')
-                .then(
+                .andThen(
             result(
                 s))));
     }
@@ -91,9 +91,9 @@ public final class Parsers {
     public static <R, S> Parser<Stream<R>> delimited(Parser<R> parser, Parser<S> deliminator) {
         var nonEmpty =
             parser
-                .andThen(result ->
-            deliminator.then(parser).many()
-                .andThen(results ->
+                .read(result ->
+            deliminator.andThen(parser).many()
+                .read(results ->
             result(
                 concat(Stream.of(result), results))));
         return
