@@ -72,6 +72,10 @@ interface Parser<T> {
         };
     }
 
+    static <T> Parser<Stream<T>> none() {
+        return result(empty());
+    }
+
     default Parser<T> once() {
         return this;
     }
@@ -90,7 +94,6 @@ interface Parser<T> {
         return
             some()
                 .orElse(() ->
-            result(
-                empty()));
+            none());
     }
 }
