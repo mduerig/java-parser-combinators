@@ -194,7 +194,7 @@ public class ParserTest {
                                 new JsonNumber(2),
                                 new JsonNumber(3))))))),
                 "x"),
-            jsonObject().parse("{\"int\"=5,\"string\"=\"foo\",\"emptyArray\"=[],\"object\"={\"array\"=[1,2,3]}}x"));
+            jsonObject().parse("{\"int\":5,\"string\":\"foo\",\"emptyArray\":[],\"object\":{\"array\":[1,2,3]}}x"));
     }
 
     private static <T> List<T> toList(Stream<T> stream) {

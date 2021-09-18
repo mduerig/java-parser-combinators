@@ -85,7 +85,7 @@ public class JsonParser {
         var member =
             string()
                 .read(key ->
-            literal("=")
+            literal(":")
                 .andThen(
             jsonValue())
                 .read(value ->
