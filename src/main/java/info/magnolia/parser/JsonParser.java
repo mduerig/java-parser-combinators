@@ -80,9 +80,9 @@ public class JsonParser {
     }
 
     public static Parser<JsonValue> jsonObject() {
-        record KeyValue(String key, JsonValue value) {}
+        record Member(String key, JsonValue value) {}
 
-        var keyValuePair =
+        var member =
             string()
                 .read(key ->
             literal("=")
@@ -90,17 +90,17 @@ public class JsonParser {
             jsonValue())
                 .read(value ->
             result(
-                new KeyValue(key, value))));
+                new Member(key, value))));
 
         return
             literal("{")
                 .andThen(
-            delimited(keyValuePair, literal(",")))
-                .read(keyValuePairs ->
+            delimited(member, literal(",")))
+                .read(members ->
             literal("}")
                 .andThen(
             result(
-                keyValuePairs.collect(toMap(KeyValue::key, KeyValue::value))))
+                members.collect(toMap(Member::key, Member::value))))
                     .map(JsonObject::new));
     }
 
