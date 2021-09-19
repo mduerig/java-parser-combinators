@@ -29,7 +29,7 @@ public class JsonParser {
     public static Parser<JsonValue> jsonNull() {
         return
             literal("null")
-                .andThen(
+                .ignore(
             result(
                 new JsonNull()));
     }
@@ -37,13 +37,13 @@ public class JsonParser {
     public static Parser<JsonValue> jsonBool() {
         var parseTrue =
             literal("true")
-                .andThen(
+                .ignore(
             result(
                 true));
 
         var parseFalse =
             literal("false")
-                .andThen(
+                .ignore(
             result(
                 false));
 
@@ -69,11 +69,11 @@ public class JsonParser {
     public static Parser<JsonValue> jsonArray() {
         return
             literal("[")
-                .andThen(
+                .ignore(
             delimited(jsonValue(), literal(",")))
                 .read(values ->
             literal("]")
-                .andThen(
+                .ignore(
             result(
                 values.collect(toList())))
                     .map(JsonArray::new));
@@ -86,7 +86,7 @@ public class JsonParser {
             string()
                 .read(key ->
             literal(":")
-                .andThen(
+                .ignore(
             jsonValue())
                 .read(value ->
             result(
@@ -94,11 +94,11 @@ public class JsonParser {
 
         return
             literal("{")
-                .andThen(
+                .ignore(
             delimited(member, literal(",")))
                 .read(members ->
             literal("}")
-                .andThen(
+                .ignore(
             result(
                 members.collect(toMap(Member::key, Member::value))))
                     .map(JsonObject::new));

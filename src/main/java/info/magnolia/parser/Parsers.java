@@ -79,11 +79,11 @@ public final class Parsers {
     public static Parser<String> string() {
         return
             character('"')
-                .andThen(
+                .ignore(
             chars(c -> c != '"')
                 .read(s ->
             character('"')
-                .andThen(
+                .ignore(
             result(
                 s))));
     }
@@ -92,7 +92,7 @@ public final class Parsers {
         var nonEmpty =
             parser
                 .read(result ->
-            deliminator.andThen(parser).many()
+            deliminator.ignore(parser).many()
                 .read(results ->
             result(
                 concat(Stream.of(result), results))));

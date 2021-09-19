@@ -59,7 +59,7 @@ interface Parser<T> {
         };
     }
 
-    default <R> Parser<R> andThen(Parser<R> parser) {
+    default <R> Parser<R> ignore(Parser<R> parser) {
         return read(__ -> parser);
     }
 
