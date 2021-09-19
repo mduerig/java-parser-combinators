@@ -22,8 +22,6 @@ interface Parser<T> {
         }
     }
 
-    Result<T> parse(String input);
-
     static <T> Result<T> success(T result, String remainder) {
         return new Result<>(result, null, remainder);
     }
@@ -31,6 +29,8 @@ interface Parser<T> {
     static <T> Result<T> failure(String error, String remainder) {
         return new Result<>(null, error, remainder);
     }
+
+    Result<T> parse(String input);
 
     static <R> Parser<R> result(R result) {
         return input -> success(result, input);
