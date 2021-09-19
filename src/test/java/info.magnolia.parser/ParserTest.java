@@ -54,7 +54,7 @@ public class ParserTest {
     }
 
     @Test
-    public void andThen() {
+    public void read() {
         var parser =
             character('a')
                 .read(c1 ->
