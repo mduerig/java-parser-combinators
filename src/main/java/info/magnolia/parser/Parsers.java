@@ -89,15 +89,19 @@ public final class Parsers {
     }
 
     public static <R, S> Parser<Stream<R>> delimited(Parser<R> parser, Parser<S> deliminator) {
-        var nonEmpty =
+        var more =
+            deliminator.ignore(parser)
+                .many();
+
+        var some =
             parser
                 .read(result ->
-            deliminator.ignore(parser).many()
+            more
                 .read(results ->
             result(
                 concat(Stream.of(result), results))));
         return
-            nonEmpty
+            some
                 .orElse(() ->
             none());
     }
