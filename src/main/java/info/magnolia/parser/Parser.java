@@ -76,8 +76,9 @@ interface Parser<T> {
         return result(empty());
     }
 
-    default Parser<T> once() {
-        return this;
+    default Parser<Stream<T>> once() {
+        return this
+            .map(Stream::of);
     }
 
     default Parser<Stream<T>> some() {
@@ -87,7 +88,7 @@ interface Parser<T> {
             many()
                 .read(results ->
             result(
-                concat(Stream.of(result), results))));
+                concat(result, results))));
     }
 
     default Parser<Stream<T>> many() {
