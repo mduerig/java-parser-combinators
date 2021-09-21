@@ -39,14 +39,17 @@ public final class Parsers {
 
     public record Coordinate(Character c, Integer i) {}
 
+    // h,4
     public static Parser<Coordinate> coordinate() {
         return
             character()
                 .read(c ->
+            character(',')
+                .ignore(
             digit()
                 .read(d ->
             result(
-                 new Coordinate(c, d))));
+                 new Coordinate(c, d)))));
     }
 
     public static Parser<String> literal(String literal) {

@@ -49,7 +49,7 @@ public class ParserTest {
 
     @Test
     public void coordinateParser() {
-        var result = coordinate().parse("h7x");
+        var result = coordinate().parse("h,7x");
         assertEquals(success(new Coordinate('h', 7), "x"), result);
     }
 
