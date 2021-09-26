@@ -39,7 +39,7 @@ interface Parser<T> {
     default Parser<T> filter(Predicate<T> predicate) {
         return input -> {
             var result = parse(input);
-            return result.isSuccess() && predicate.test(result.value)
+            return !result.isSuccess() || predicate.test(result.value)
                ? result
                : failure("Unexpected input " + input, input);
         };
