@@ -110,15 +110,13 @@ public class JsonParser {
                 .orElse(() ->
             jsonString()
                 .orElse(() ->
-            jsonNull()
-                .orElse(() ->
             jsonNumber()
                 .orElse(() ->
-            jsonString()
+            jsonBool()
                 .orElse(() ->
             jsonArray()
                 .orElse(() ->
-            jsonObject()))))));
+            jsonObject())))));
     }
 
 }
