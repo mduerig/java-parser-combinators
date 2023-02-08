@@ -1,7 +1,5 @@
 package info.magnolia.parser;
 
-import static info.magnolia.parser.JsonParser.newValueFactory;
-
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +14,6 @@ public class JsonDTOs {
     public record JsonObject(Map<String, JsonValue> value) implements JsonValue {}
     public record JsonArray(List<JsonValue> value) implements JsonValue {}
 
-    public static final ValueFactory<JsonValue> JSON_VALUE_FACTORY = newValueFactory(
+    public static final ValueFactory<JsonValue> JSON_VALUE_FACTORY = new ValueFactory<>(
         JsonNull::new, JsonBool::new, JsonNumber::new, JsonString::new, JsonArray::new, JsonObject::new);
 }

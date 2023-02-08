@@ -15,50 +15,20 @@ import java.util.function.Supplier;
 
 public class JsonParser {
 
-    interface ValueFactory<JSON> {
-        JSON newJsonNull();
-        JSON newJsonBool(boolean value);
-        JSON newJsonNumber(int value);
-        JSON newJsonString(String value);
-        JSON newJsonArray(List<JSON> values);
-        JSON newJsonObject(Map<String, JSON> values);
-    }
-
-    public static <JSON> ValueFactory<JSON> newValueFactory(
-        Supplier<JSON> jsonNullFactory,
-        Function<Boolean, JSON> jsonBoolFactory,
-        Function<Integer, JSON> jsonNumberFactory,
-        Function<String, JSON> jsonStringFactory,
-        Function<List<JSON>, JSON> jsonArrayFactory,
-        Function<Map<String, JSON>, JSON> jsonObjectFactory
-    ) {
-        return new ValueFactory<>() {
-            @Override
-            public JSON newJsonNull() { return jsonNullFactory.get(); }
-
-            @Override
-            public JSON newJsonBool(boolean value) { return jsonBoolFactory.apply(value); }
-
-            @Override
-            public JSON newJsonNumber(int value) { return jsonNumberFactory.apply(value); }
-
-            @Override
-            public JSON newJsonString(String value) { return jsonStringFactory.apply(value); }
-
-            @Override
-            public JSON newJsonArray(List<JSON> values) { return jsonArrayFactory.apply(values); }
-
-            @Override
-            public JSON newJsonObject(Map<String, JSON> values) { return jsonObjectFactory.apply(values); }
-        };
-    }
+    record ValueFactory<JSON>(
+        Supplier<JSON> newNull,
+        Function<Boolean, JSON> newBool,
+        Function<Integer, JSON> newNumber,
+        Function<String, JSON> newString,
+        Function<List<JSON>, JSON> newArray,
+        Function<Map<String, JSON>, JSON> newObject) {}
 
     public static <JSON> Parser<JSON> jsonNull(ValueFactory<JSON> factory) {
         return
             literal("null")
                 .ignore(
             result(
-                factory.newJsonNull()));
+                factory.newNull.get()));
     }
 
     public static <JSON> Parser<JSON> jsonBool(ValueFactory<JSON> factory) {
@@ -78,19 +48,19 @@ public class JsonParser {
             parseTrue
                 .orElse(() ->
             parseFalse)
-                .map(factory::newJsonBool);
+                .map(factory.newBool);
     }
 
     public static <JSON> Parser<JSON> jsonNumber(ValueFactory<JSON> factory) {
         return
             integer()
-                .map(factory::newJsonNumber);
+                .map(factory.newNumber);
     }
 
     public static <JSON> Parser<JSON> jsonString(ValueFactory<JSON> factory) {
         return
             string()
-                .map(factory::newJsonString);
+                .map(factory.newString);
     }
 
     public static <JSON> Parser<JSON> jsonArray(ValueFactory<JSON> factory) {
@@ -103,7 +73,7 @@ public class JsonParser {
                 .ignore(
             result(
                 values.collect(toList())))
-                    .map(factory::newJsonArray));
+                    .map(factory.newArray));
     }
 
     public static <JSON> Parser<JSON> jsonObject(ValueFactory<JSON> factory) {
@@ -128,7 +98,7 @@ public class JsonParser {
                 .ignore(
             result(
                 members.collect(toMap(Member::key, Member::value))))
-                    .map(factory::newJsonObject));
+                    .map(factory.newObject));
     }
 
     public static <JSON> Parser<JSON> jsonValue(ValueFactory<JSON> factory) {
