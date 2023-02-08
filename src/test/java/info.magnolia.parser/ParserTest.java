@@ -1,12 +1,13 @@
 package info.magnolia.parser;
 
-import static info.magnolia.parser.JsonParser.JSON_VALUE_FACTORY;
+import static info.magnolia.parser.JsonDTOs.JSON_VALUE_FACTORY;
 import static info.magnolia.parser.JsonParser.jsonArray;
 import static info.magnolia.parser.JsonParser.jsonBool;
 import static info.magnolia.parser.JsonParser.jsonNull;
 import static info.magnolia.parser.JsonParser.jsonNumber;
 import static info.magnolia.parser.JsonParser.jsonObject;
 import static info.magnolia.parser.JsonParser.jsonString;
+import static info.magnolia.parser.JsonParser.jsonValue;
 import static info.magnolia.parser.Parser.success;
 import static info.magnolia.parser.Parsers.character;
 import static info.magnolia.parser.Parsers.chars;
@@ -25,12 +26,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import info.magnolia.parser.JsonParser.JsonArray;
-import info.magnolia.parser.JsonParser.JsonBool;
-import info.magnolia.parser.JsonParser.JsonNull;
-import info.magnolia.parser.JsonParser.JsonNumber;
-import info.magnolia.parser.JsonParser.JsonObject;
-import info.magnolia.parser.JsonParser.JsonString;
+import info.magnolia.parser.JsonDTOs.JsonArray;
+import info.magnolia.parser.JsonDTOs.JsonBool;
+import info.magnolia.parser.JsonDTOs.JsonNull;
+import info.magnolia.parser.JsonDTOs.JsonNumber;
+import info.magnolia.parser.JsonDTOs.JsonObject;
+import info.magnolia.parser.JsonDTOs.JsonString;
 import info.magnolia.parser.Parsers.Coordinate;
 import org.junit.jupiter.api.Test;
 
@@ -183,19 +184,25 @@ public class ParserTest {
     @Test
     public void jsonObjectParser() {
         assertEquals(success(new JsonObject(Map.of()), "x"), jsonObject(JSON_VALUE_FACTORY).parse("{}x"));
+        JsonObject jsonObject = new JsonObject(Map.of
+            ( "int", new JsonNumber(5)
+            , "string", new JsonString("foo")
+            , "emptyArray", new JsonArray(emptyList())
+            , "object", new JsonObject(Map.of
+                 ("array", new JsonArray(List.of
+                     ( new JsonNumber(1)
+                     , new JsonNumber(2)
+                     , new JsonNumber(3)
+                     ))
+                 ))
+            ));
+
         assertEquals(
-            success(
-                new JsonObject(Map.of(
-                    "int", new JsonNumber(5),
-                    "string", new JsonString("foo"),
-                    "emptyArray", new JsonArray(emptyList()),
-                    "object", new JsonObject(Map.of(
-                            "array", new JsonArray(List.of(
-                                new JsonNumber(1),
-                                new JsonNumber(2),
-                                new JsonNumber(3))))))),
-                "x"),
+            success(jsonObject, "x"),
             jsonObject(JSON_VALUE_FACTORY).parse("{\"int\":5,\"string\":\"foo\",\"emptyArray\":[],\"object\":{\"array\":[1,2,3]}}x"));
+        assertEquals(
+            success(jsonObject, "x"),
+            jsonValue(JSON_VALUE_FACTORY).parse("{\"int\":5,\"string\":\"foo\",\"emptyArray\":[],\"object\":{\"array\":[1,2,3]}}x"));
     }
 
     private static <T> List<T> toList(Stream<T> stream) {
