@@ -184,6 +184,7 @@ public class ParserTest {
     @Test
     public void jsonObjectParser() {
         assertEquals(success(new JsonObject(Map.of()), "x"), jsonObject(JSON_VALUE_FACTORY).parse("{}x"));
+
         JsonObject jsonObject = new JsonObject(Map.of
             ( "int", new JsonNumber(5)
             , "string", new JsonString("foo")
