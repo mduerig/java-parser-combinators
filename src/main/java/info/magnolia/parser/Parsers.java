@@ -1,7 +1,6 @@
 package info.magnolia.parser;
 
 import static info.magnolia.parser.Parser.failure;
-import static info.magnolia.parser.Parser.none;
 import static info.magnolia.parser.Parser.result;
 import static info.magnolia.parser.Parser.success;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -118,8 +117,8 @@ public final class Parsers {
                 concat(Stream.of(result), results))));
         return
             some
-                .orElse(() ->
-            none());
+                .orElse(
+            Parser::none);
     }
 
 }

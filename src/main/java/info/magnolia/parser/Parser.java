@@ -94,7 +94,7 @@ interface Parser<T> {
     default Parser<Stream<T>> many() {
         return
             some()
-                .orElse(() ->
-            none());
+                .orElse(
+            Parser::none);
     }
 }
