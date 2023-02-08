@@ -10,6 +10,8 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class JsonParser {
 
@@ -20,6 +22,35 @@ public class JsonParser {
         JSON newJsonString(String value);
         JSON newJsonArray(List<JSON> values);
         JSON newJsonObject(Map<String, JSON> values);
+    }
+
+    public static <JSON> ValueFactory<JSON> newValueFactory(
+        Supplier<JSON> jsonNullFactory,
+        Function<Boolean, JSON> jsonBoolFactory,
+        Function<Integer, JSON> jsonNumberFactory,
+        Function<String, JSON> jsonStringFactory,
+        Function<List<JSON>, JSON> jsonArrayFactory,
+        Function<Map<String, JSON>, JSON> jsonObjectFactory
+    ) {
+        return new ValueFactory<>() {
+            @Override
+            public JSON newJsonNull() { return jsonNullFactory.get(); }
+
+            @Override
+            public JSON newJsonBool(boolean value) { return jsonBoolFactory.apply(value); }
+
+            @Override
+            public JSON newJsonNumber(int value) { return jsonNumberFactory.apply(value); }
+
+            @Override
+            public JSON newJsonString(String value) { return jsonStringFactory.apply(value); }
+
+            @Override
+            public JSON newJsonArray(List<JSON> values) { return jsonArrayFactory.apply(values); }
+
+            @Override
+            public JSON newJsonObject(Map<String, JSON> values) { return jsonObjectFactory.apply(values); }
+        };
     }
 
     public static <JSON> Parser<JSON> jsonNull(ValueFactory<JSON> factory) {
