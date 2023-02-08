@@ -26,15 +26,26 @@ public class JsonParser {
 
     public record JsonArray(List<JsonValue> value) implements JsonValue {}
 
-    public static Parser<JsonValue> jsonNull() {
+    interface JsonValueFactory {
+        default JsonValue newJsonNull() { return new JsonNull(); }
+        default JsonValue newJsonBool(boolean value) { return new JsonBool(value); }
+        default JsonValue newJsonNumber(int value) { return new JsonNumber(value); }
+        default JsonValue newJsonString(String value) { return new JsonString(value); }
+        default JsonValue newJsonArray(List<JsonValue> values) { return new JsonArray(values); }
+        default JsonValue newJsonObject(Map<String, JsonValue> values) { return new JsonObject(values); }
+    }
+
+    public static final JsonValueFactory JSON_VALUE_FACTORY = new JsonValueFactory() {};
+
+    public static Parser<JsonValue> jsonNull(JsonValueFactory factory) {
         return
             literal("null")
                 .ignore(
             result(
-                new JsonNull()));
+                factory.newJsonNull()));
     }
 
-    public static Parser<JsonValue> jsonBool() {
+    public static Parser<JsonValue> jsonBool(JsonValueFactory factory) {
         var parseTrue =
             literal("true")
                 .ignore(
@@ -51,35 +62,35 @@ public class JsonParser {
             parseTrue
                 .orElse(() ->
             parseFalse)
-                .map(JsonBool::new);
+                .map(factory::newJsonBool);
     }
 
-    public static Parser<JsonValue> jsonNumber() {
+    public static Parser<JsonValue> jsonNumber(JsonValueFactory factory) {
         return
             integer()
-                .map(JsonNumber::new);
+                .map(factory::newJsonNumber);
     }
 
-    public static Parser<JsonValue> jsonString() {
+    public static Parser<JsonValue> jsonString(JsonValueFactory factory) {
         return
             string()
-                .map(JsonString::new);
+                .map(factory::newJsonString);
     }
 
-    public static Parser<JsonValue> jsonArray() {
+    public static Parser<JsonValue> jsonArray(JsonValueFactory factory) {
         return
             literal("[")
                 .ignore(
-            delimited(jsonValue(), literal(",")))
+            delimited(jsonValue(factory), literal(",")))
                 .read(values ->
             literal("]")
                 .ignore(
             result(
                 values.collect(toList())))
-                    .map(JsonArray::new));
+                    .map(factory::newJsonArray));
     }
 
-    public static Parser<JsonValue> jsonObject() {
+    public static Parser<JsonValue> jsonObject(JsonValueFactory factory) {
         record Member(String key, JsonValue value) {}
 
         var member =
@@ -87,7 +98,7 @@ public class JsonParser {
                 .read(key ->
             literal(":")
                 .ignore(
-            jsonValue())
+            jsonValue(factory))
                 .read(value ->
             result(
                 new Member(key, value))));
@@ -101,22 +112,22 @@ public class JsonParser {
                 .ignore(
             result(
                 members.collect(toMap(Member::key, Member::value))))
-                    .map(JsonObject::new));
+                    .map(factory::newJsonObject));
     }
 
-    public static Parser<JsonValue> jsonValue() {
+    public static Parser<JsonValue> jsonValue(JsonValueFactory factory) {
         return
-            jsonNull()
+            jsonNull(factory)
                 .orElse(() ->
-            jsonString()
+            jsonString(factory)
                 .orElse(() ->
-            jsonNumber()
+            jsonNumber(factory)
                 .orElse(() ->
-            jsonBool()
+            jsonBool(factory)
                 .orElse(() ->
-            jsonArray()
+            jsonArray(factory)
                 .orElse(() ->
-            jsonObject())))));
+            jsonObject(factory))))));
     }
 
 }

@@ -1,5 +1,6 @@
 package info.magnolia.parser;
 
+import static info.magnolia.parser.JsonParser.JSON_VALUE_FACTORY;
 import static info.magnolia.parser.JsonParser.jsonArray;
 import static info.magnolia.parser.JsonParser.jsonBool;
 import static info.magnolia.parser.JsonParser.jsonNull;
@@ -154,34 +155,34 @@ public class ParserTest {
 
     @Test
     public void jsonNullParser() {
-        assertEquals(success(new JsonNull(), "x"), jsonNull().parse("nullx"));
+        assertEquals(success(new JsonNull(), "x"), jsonNull(JSON_VALUE_FACTORY).parse("nullx"));
     }
 
     @Test
     public void jsonBoolParser() {
-        assertEquals(success(new JsonBool(true), "x"), jsonBool().parse("truex"));
-        assertEquals(success(new JsonBool(false), "x"), jsonBool().parse("falsex"));
+        assertEquals(success(new JsonBool(true), "x"), jsonBool(JSON_VALUE_FACTORY).parse("truex"));
+        assertEquals(success(new JsonBool(false), "x"), jsonBool(JSON_VALUE_FACTORY).parse("falsex"));
     }
 
     @Test
     public void jsonNumberParser() {
-        assertEquals(success(new JsonNumber(1234), "x"), jsonNumber().parse("1234x"));
+        assertEquals(success(new JsonNumber(1234), "x"), jsonNumber(JSON_VALUE_FACTORY).parse("1234x"));
     }
 
     @Test
     public void jsonStringParser() {
-        assertEquals(success(new JsonString("foobar"), "x"), jsonString().parse("\"foobar\"x"));
+        assertEquals(success(new JsonString("foobar"), "x"), jsonString(JSON_VALUE_FACTORY).parse("\"foobar\"x"));
     }
 
     @Test
     public void jsonArrayParser() {
-        assertEquals(success(new JsonArray(List.of()), "x"), jsonArray().parse("[]x"));
-        assertEquals(success(new JsonArray(List.of(new JsonNumber(1), new JsonNumber(2), new JsonNumber(3))), "x"), jsonArray().parse("[1,2,3]x"));
+        assertEquals(success(new JsonArray(List.of()), "x"), jsonArray(JSON_VALUE_FACTORY).parse("[]x"));
+        assertEquals(success(new JsonArray(List.of(new JsonNumber(1), new JsonNumber(2), new JsonNumber(3))), "x"), jsonArray(JSON_VALUE_FACTORY).parse("[1,2,3]x"));
     }
 
     @Test
     public void jsonObjectParser() {
-        assertEquals(success(new JsonObject(Map.of()), "x"), jsonObject().parse("{}x"));
+        assertEquals(success(new JsonObject(Map.of()), "x"), jsonObject(JSON_VALUE_FACTORY).parse("{}x"));
         assertEquals(
             success(
                 new JsonObject(Map.of(
@@ -194,7 +195,7 @@ public class ParserTest {
                                 new JsonNumber(2),
                                 new JsonNumber(3))))))),
                 "x"),
-            jsonObject().parse("{\"int\":5,\"string\":\"foo\",\"emptyArray\":[],\"object\":{\"array\":[1,2,3]}}x"));
+            jsonObject(JSON_VALUE_FACTORY).parse("{\"int\":5,\"string\":\"foo\",\"emptyArray\":[],\"object\":{\"array\":[1,2,3]}}x"));
     }
 
     private static <T> List<T> toList(Stream<T> stream) {
