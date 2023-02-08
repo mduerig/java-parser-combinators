@@ -14,17 +14,17 @@ import java.util.Map;
 public class JsonParser {
     interface JsonValue {}
 
-    public static record JsonString(String value) implements JsonValue {}
+    public record JsonString(String value) implements JsonValue {}
 
-    public static record JsonNumber(int value) implements JsonValue {}
+    public record JsonNumber(int value) implements JsonValue {}
 
-    public static record JsonBool(boolean value) implements JsonValue {}
+    public record JsonBool(boolean value) implements JsonValue {}
 
-    public static record JsonNull() implements JsonValue {}
+    public record JsonNull() implements JsonValue {}
 
-    public static record JsonObject(Map<String, JsonValue> value) implements JsonValue {}
+    public record JsonObject(Map<String, JsonValue> value) implements JsonValue {}
 
-    public static record JsonArray(List<JsonValue> value) implements JsonValue {}
+    public record JsonArray(List<JsonValue> value) implements JsonValue {}
 
     public static Parser<JsonValue> jsonNull() {
         return
